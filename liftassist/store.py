@@ -18,11 +18,22 @@ CREATE TABLE IF NOT EXISTS assistance(id TEXT PRIMARY KEY,journey_id TEXT NOT NU
 CREATE TABLE IF NOT EXISTS obligation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,kind TEXT NOT NULL,reason TEXT NOT NULL,resolved INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS compensation_contract(id TEXT NOT NULL,revision INTEGER NOT NULL,effective_from TEXT NOT NULL,rate_per_5min_cents INTEGER NOT NULL,max_cents INTEGER NOT NULL,sha TEXT NOT NULL,PRIMARY KEY(id,revision));
 CREATE TABLE IF NOT EXISTS compensation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,assist_id TEXT NOT NULL,contract_id TEXT,contract_revision INTEGER,delay_minutes INTEGER NOT NULL,amount_cents INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS display_screen(id TEXT PRIMARY KEY,station TEXT NOT NULL,zone TEXT NOT NULL,device_serial TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS display_screen(id TEXT PRIMARY KEY,station TEXT NOT NULL,zone TEXT NOT NULL,device_serial TEXT NOT NULL,mirror_of TEXT);
 CREATE TABLE IF NOT EXISTS ad_campaign(id TEXT PRIMARY KEY,advertiser TEXT NOT NULL,asset_hash TEXT NOT NULL,guaranteed_seconds INTEGER NOT NULL,valid_from TEXT NOT NULL,valid_to TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS play_command(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,campaign_id TEXT NOT NULL,starts TEXT NOT NULL,ends TEXT NOT NULL,priority INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS screen_ack(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,command_id TEXT NOT NULL,asset_hash TEXT NOT NULL,observed_at TEXT NOT NULL,state TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS camera_frame(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,image_hash TEXT NOT NULL,captured_at TEXT NOT NULL,visible_asset_hash TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS ad_contract(id TEXT PRIMARY KEY,campaign_id TEXT NOT NULL,product TEXT NOT NULL,guaranteed_seconds INTEGER NOT NULL,required_samples INTEGER NOT NULL,rate_per_second_cents INTEGER NOT NULL,sample_amount_cents INTEGER NOT NULL,signed_at TEXT NOT NULL,sha TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS screen_switch(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,seq INTEGER NOT NULL,at TEXT NOT NULL,to_asset_hash TEXT NOT NULL,UNIQUE(screen_id,seq));
+CREATE TABLE IF NOT EXISTS av_segment(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,starts TEXT NOT NULL,ends TEXT NOT NULL,visible_asset_hash TEXT NOT NULL,media_hash TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS camera_calibration(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,at TEXT NOT NULL,offset_ms INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS screen_power(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,at TEXT NOT NULL,state TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS safety_override(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,starts TEXT NOT NULL,ends TEXT NOT NULL,priority INTEGER NOT NULL,category TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS playback_confirmation(receipt_id TEXT PRIMARY KEY,command_id TEXT NOT NULL,confirmed_seconds INTEGER NOT NULL,confirmed_at TEXT NOT NULL,confirmer TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS player_counter(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,asset_hash TEXT NOT NULL,at TEXT NOT NULL,total_seconds INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS fulfillment(contract_id TEXT PRIMARY KEY,campaign_id TEXT NOT NULL,product TEXT NOT NULL,proven_seconds INTEGER NOT NULL,max_seconds INTEGER NOT NULL,unproven_seconds INTEGER NOT NULL,samples INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,event_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS ad_bill(id INTEGER PRIMARY KEY,contract_id TEXT NOT NULL,kind TEXT NOT NULL,seconds INTEGER NOT NULL,samples INTEGER NOT NULL,amount_cents INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,event_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS makeup(id INTEGER PRIMARY KEY,contract_id TEXT NOT NULL,delta_seconds INTEGER NOT NULL,owed_seconds INTEGER NOT NULL,window_start TEXT,window_end TEXT,reason TEXT NOT NULL,event_id TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS decision(id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,system TEXT NOT NULL,object_id TEXT NOT NULL,outcome TEXT NOT NULL,reason TEXT NOT NULL);
 """
 def connect(path):

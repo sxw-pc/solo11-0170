@@ -2,16 +2,22 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists,display
+from . import lifts,journeys,assists,display,ad_fulfillment
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
           'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
           'display_screen':display.screen,'ad_campaign':display.campaign,
-          'play_command':display.command,'screen_ack':display.ack,'camera_frame':display.frame}
+          'play_command':display.command,'screen_ack':display.ack,'camera_frame':display.frame,
+          'ad_contract':ad_fulfillment.contract,'screen_switch':ad_fulfillment.switch,'av_segment':ad_fulfillment.segment,
+          'camera_calibration':ad_fulfillment.calibration,'screen_power':ad_fulfillment.power,
+          'safety_override':ad_fulfillment.override,'playback_confirmation':ad_fulfillment.confirmation,
+          'player_counter':ad_fulfillment.counter}
 GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
-        'display':{'display_screen','ad_campaign','play_command','screen_ack','camera_frame'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','display_screen','ad_campaign','play_command','screen_ack','camera_frame','decision')
+        'display':{'display_screen','ad_campaign','play_command','screen_ack','camera_frame',
+                   'ad_contract','screen_switch','av_segment','camera_calibration','screen_power',
+                   'safety_override','playback_confirmation','player_counter'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','display_screen','ad_campaign','play_command','screen_ack','camera_frame','ad_contract','screen_switch','av_segment','camera_calibration','screen_power','safety_override','playback_confirmation','player_counter','fulfillment','ad_bill','makeup','decision')
 
 def apply(db,event):
     kind=event.get('kind')
