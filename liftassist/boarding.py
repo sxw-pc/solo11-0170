@@ -1,5 +1,9 @@
 import json
-from .store import one,log
+from .store import one,many,log
+
+def dock_rows(db,profile_id):
+    """Calibration evidence for a platform: every dock measurement on its profiles."""
+    return many(db,'SELECT d.* FROM dock_measurement d WHERE d.profile_id=? ORDER BY d.stop_offset_cm',(profile_id,))
 
 def profile(db,e):
     if not e['edge_points'] or not e['station']:raise ValueError('invalid_platform_profile')

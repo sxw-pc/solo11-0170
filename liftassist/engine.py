@@ -2,15 +2,18 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists,boarding
+from . import lifts,journeys,assists,boarding,boarding_fit
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
           'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
-          'platform_profile':boarding.profile,'train_door':boarding.door,'bridge_board':boarding.board,'dock_measurement':boarding.dock}
+          'platform_profile':boarding.profile,'train_door':boarding.door,'bridge_board':boarding.board,'dock_measurement':boarding.dock,
+          'fit_survey':boarding_fit.survey,'door_load_profile':boarding_fit.door_profile,'board_calibration':boarding_fit.board_calibration,
+          'stop_control':boarding_fit.stop_control,'fit_certification':boarding_fit.certify,'fit_revocation':boarding_fit.revoke}
 GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
-        'boarding':{'platform_profile','train_door','bridge_board','dock_measurement'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','platform_profile','train_door','bridge_board','dock_measurement','decision')
+        'boarding':{'platform_profile','train_door','bridge_board','dock_measurement','fit_survey','door_load_profile',
+                    'board_calibration','stop_control','fit_certification','fit_revocation'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','platform_profile','train_door','bridge_board','dock_measurement','fit_survey','door_load_profile','board_calibration','stop_control','fit_certificate','safe_stop_interval','fit_counterexample','fit_action','decision')
 
 def apply(db,event):
     kind=event.get('kind')

@@ -1,0 +1,12 @@
+{"events":[
+{"id":"NE01","kind":"platform_profile","profile_id":"PL2","station":"ST2","track":"T1","edge_points":[[0,0],[1000,0]],"survey_at":"2026-02-01T08:00:00Z"},
+{"id":"NE02","kind":"train_door","door_id":"D2","train_model":"M1","car_no":1,"door_x_cm":500,"floor_height_cm":110,"door_width_cm":90},
+{"id":"NE03","kind":"bridge_board","board_id":"BB3","station":"ST2","length_cm":120,"width_cm":80,"max_slope_permille":83},
+{"id":"NE04","kind":"dock_measurement","measurement_id":"NDM0","profile_id":"PL2","door_id":"D2","stop_offset_cm":0,"gap_cm":60,"height_diff_cm":7,"measured_at":"2026-02-01T09:00:00Z"},
+{"id":"NE05","kind":"dock_measurement","measurement_id":"NDMN","profile_id":"PL2","door_id":"D2","stop_offset_cm":-35,"gap_cm":55,"height_diff_cm":6,"measured_at":"2026-02-01T09:05:00Z"},
+{"id":"NE06","kind":"dock_measurement","measurement_id":"NDMP","profile_id":"PL2","door_id":"D2","stop_offset_cm":35,"gap_cm":62,"height_diff_cm":7,"measured_at":"2026-02-01T09:10:00Z"},
+{"id":"NE07","kind":"fit_survey","survey_id":"SV2","profile_id":"PL2","survey_version":1,"edge_points":[[400,60],[550,60],[555,70],[560,70],[565,60],[620,60]],"horizontal_precision_cm":2,"vertical_precision_cm":1,"yaw_margin_cm":3,"survey_at":"2026-02-01T10:00:00Z"},
+{"id":"NE08","kind":"door_load_profile","profile_id":"PL2","door_id":"D2","floor_height_cm":110,"load_variation_cm":1},
+{"id":"NE09","kind":"board_calibration","calibration_id":"CAL3","board_id":"BB3","bearing_end_cm":4,"flex_cm":0,"calibrated_at":"2026-02-01T10:30:00Z"},
+{"id":"NE10","kind":"fit_certification","cert_id":"CN1","profile_id":"PL2","door_id":"D2","board_id":"BB3","survey_id":"SV2","calibration_id":"CAL3","requested_half_width_cm":35,"mode":"full_envelope","wheelchair_width_cm":75}
+]}

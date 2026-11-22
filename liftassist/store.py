@@ -22,6 +22,14 @@ CREATE TABLE IF NOT EXISTS platform_profile(id TEXT PRIMARY KEY,station TEXT NOT
 CREATE TABLE IF NOT EXISTS train_door(id TEXT PRIMARY KEY,train_model TEXT NOT NULL,car_no INTEGER NOT NULL,door_x_cm INTEGER NOT NULL,floor_height_cm INTEGER NOT NULL,door_width_cm INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS bridge_board(id TEXT PRIMARY KEY,station TEXT NOT NULL,length_cm INTEGER NOT NULL,width_cm INTEGER NOT NULL,max_slope_permille INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS dock_measurement(id TEXT PRIMARY KEY,profile_id TEXT NOT NULL,door_id TEXT NOT NULL,stop_offset_cm INTEGER NOT NULL,gap_cm INTEGER NOT NULL,height_diff_cm INTEGER NOT NULL,measured_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS fit_survey(id TEXT PRIMARY KEY,profile_id TEXT NOT NULL,survey_version INTEGER NOT NULL,edge_points_json TEXT NOT NULL,horizontal_precision_cm REAL NOT NULL,vertical_precision_cm REAL NOT NULL,yaw_margin_cm REAL NOT NULL,superseded_at TEXT,conflict_state TEXT NOT NULL,event_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS door_load_profile(id TEXT PRIMARY KEY,door_id TEXT NOT NULL,floor_height_cm REAL NOT NULL,load_variation_cm REAL NOT NULL,event_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS board_calibration(id TEXT PRIMARY KEY,board_id TEXT NOT NULL,bearing_end_cm REAL NOT NULL,flex_cm REAL NOT NULL,event_id TEXT NOT NULL,superseded_at TEXT);
+CREATE TABLE IF NOT EXISTS stop_control(id TEXT PRIMARY KEY,station TEXT NOT NULL,track TEXT NOT NULL,window_half_width_cm REAL NOT NULL,method TEXT NOT NULL,active_from TEXT NOT NULL,state TEXT NOT NULL,event_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS fit_certificate(id TEXT PRIMARY KEY,station TEXT NOT NULL,profile_id TEXT NOT NULL,train_model TEXT NOT NULL,door_id TEXT NOT NULL,board_id TEXT NOT NULL,survey_id TEXT NOT NULL,calibration_id TEXT NOT NULL,requested_half_width_cm REAL NOT NULL,mode TEXT NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,required_precision_cm,event_id TEXT NOT NULL,revoked_at TEXT,revoked_reason TEXT);
+CREATE TABLE IF NOT EXISTS safe_stop_interval(id INTEGER PRIMARY KEY,certificate_id TEXT NOT NULL,position INTEGER NOT NULL,lower_cm REAL NOT NULL,upper_cm REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS fit_counterexample(id INTEGER PRIMARY KEY,certificate_id TEXT NOT NULL,position INTEGER NOT NULL,stop_offset_cm REAL NOT NULL,failed_check TEXT NOT NULL,gap_cm REAL NOT NULL,height_diff_cm REAL NOT NULL,effective_bearing_cm REAL NOT NULL,slope_permille REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS fit_action(id TEXT PRIMARY KEY,certificate_id TEXT NOT NULL,kind TEXT NOT NULL,state TEXT NOT NULL,detail TEXT NOT NULL,event_id TEXT NOT NULL,closed_at TEXT);
 CREATE TABLE IF NOT EXISTS decision(id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,system TEXT NOT NULL,object_id TEXT NOT NULL,outcome TEXT NOT NULL,reason TEXT NOT NULL);
 """
 def connect(path):
