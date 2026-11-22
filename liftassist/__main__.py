@@ -14,6 +14,7 @@ def main():
     if x.cmd=='demo':
         staff=Path(__file__).resolve().parent.parent/'fixtures'/'staff-ok.json'
         import_file(x.db,staff,'assist')
+        import_file(x.db,Path(__file__).resolve().parent.parent/'fixtures'/'terms-ok.json','assist')
         file=Path(__file__).resolve().parent.parent/'fixtures'/'demo.json'
         result=import_file(x.db,file)
         result['audit']=audit(x.db)

@@ -26,7 +26,7 @@ class LiftAssistTests(unittest.TestCase):
     def setup_journey(self):
         self.ingest('lift-ok.json');self.ingest('staff-ok.json');self.ingest('journey-ok.json')
     def test_demo_replay_crosses_three_business_ledgers(self):
-        self.ingest('staff-ok.json')
+        self.ingest('staff-ok.json');self.ingest('terms-ok.json')
         out=self.ingest('demo.json')
         self.assertEqual([x['outcome'] for x in out['events']],['open','committed','blocked','fulfilled','awaiting_retest','open'])
         self.assertTrue(audit(self.db)['replay_ok'])
@@ -59,14 +59,46 @@ class LiftAssistTests(unittest.TestCase):
         self.setup_journey()
         self.import_events('second.json',[event('journey',journey_id='J2',passenger='P2',lift_id='L1',wheelchair_width=80,requested_at='2026-11-22T08:06:00Z',need_by='2026-11-22T08:34:00Z',route_minutes=10,staff_id='S1')])
         self.assertEqual({x['id']:x['state'] for x in report(self.db)['journey']}['J2'],'waitlist')
+    def test_secondary_lift_fault_invalidates_multisegment_route(self):
+        self.ingest('lift-ok.json');self.ingest('staff-ok.json')
+        self.import_events('lift2.json',[event('lift',id='lift-2',lift_id='L2',station='Central',width_cm=90,capacity=500,revision=1)])
+        route=[{'lift_id':'L1','from':'street','to':'mezzanine','minutes':5},
+               {'lift_id':'L2','from':'mezzanine','to':'platform','minutes':7}]
+        self.import_events('multiroute.json',[event('journey',id='j-multi',journey_id='Jm',passenger='Pm',lift_id='L1',entrance='street',platform='platform',route=route,wheelchair_width=80,requested_at='2026-11-22T08:05:00Z',need_by='2026-11-22T08:35:00Z',route_minutes=12,staff_id='S1')])
+        self.assertEqual(report(self.db)['journey'][0]['state'],'committed')
+        self.import_events('lift2fault.json',[event('fault',id='fault-2',fault_id='F2',lift_id='L2',opened_at='2026-11-22T08:10:00Z')])
+        self.assertEqual(report(self.db)['journey'][0]['state'],'reroute')
+        self.assertEqual(len(report(self.db)['route_segment']),2)
+        self.assertTrue(audit(self.db)['replay_ok'])
+    def test_route_disconnection_is_atomic_rejection(self):
+        self.ingest('lift-ok.json');self.ingest('staff-ok.json')
+        route=[{'lift_id':'L1','from':'street','to':'mezzanine','minutes':5},
+               {'lift_id':'L1','from':'other','to':'platform','minutes':5}]
+        with self.assertRaisesRegex(ValueError,'disconnected_route'):
+            self.import_events('disconnect.json',[event('journey',journey_id='Jbad',passenger='Pbad',lift_id='L1',entrance='street',platform='platform',route=route,wheelchair_width=80,requested_at='2026-11-22T08:05:00Z',need_by='2026-11-22T08:35:00Z',route_minutes=10,staff_id='S1')])
+        self.assertEqual(report(self.db)['journey'],[])
     def test_single_party_assist_cannot_prove_delivery(self):
         self.setup_journey();self.ingest('assist-bad.json')
         self.assertEqual(report(self.db)['assistance'][0]['state'],'unverified')
     def test_late_delivery_creates_compensation(self):
-        self.setup_journey()
+        self.setup_journey();self.ingest('terms-ok.json')
         self.import_events('late.json',[event('assist',assist_id='A3',journey_id='J1',staff_id='S1',arrived_at='2026-11-22T08:12:00Z',delivered_at='2026-11-22T08:45:00Z',witness='P1',passenger_confirmed=True)])
         self.assertEqual(report(self.db)['assistance'][0]['state'],'remedy')
         self.assertEqual(report(self.db)['obligation'][0]['kind'],'delay_compensation')
+        self.assertEqual(report(self.db)['compensation'][0]['amount_cents'],400)
+    def test_missing_compensation_terms_do_not_invent_amount(self):
+        self.setup_journey()
+        self.import_events('late-no-terms.json',[event('assist',assist_id='A4',journey_id='J1',staff_id='S1',arrived_at='2026-11-22T08:12:00Z',delivered_at='2026-11-22T08:45:00Z',witness='P1',passenger_confirmed=True)])
+        self.assertEqual(report(self.db)['compensation'][0]['state'],'pending_terms')
+    def test_compensation_revisions_are_immutable_and_bound_to_decision(self):
+        self.setup_journey();self.ingest('terms-ok.json')
+        self.import_events('late.json',[event('assist',assist_id='A3',journey_id='J1',staff_id='S1',arrived_at='2026-11-22T08:12:00Z',delivered_at='2026-11-22T08:45:00Z',witness='P1',passenger_confirmed=True)])
+        self.import_events('new-terms.json',[event('terms',contract_id='service-1',revision=2,effective_from='2026-11-23T00:00:00Z',rate_per_5min_cents=500,max_cents=5000)])
+        r=report(self.db)
+        self.assertEqual(len(r['compensation_contract']),2)
+        self.assertEqual((r['compensation'][0]['contract_revision'],r['compensation'][0]['amount_cents']),(1,400))
+        with self.assertRaisesRegex(ValueError,'parallel_compensation_contract'):
+            self.import_events('conflict-terms.json',[event('terms',id='terms-conflict',contract_id='service-1',revision=2,effective_from='2026-11-23T00:00:00Z',rate_per_5min_cents=900,max_cents=5000)])
     def test_event_id_conflict_never_overwrites_original(self):
         self.ingest('lift-ok.json')
         changed=event('lift',id='lift-1',lift_id='L1',station='Other',width_cm=95,capacity=500,revision=1)
@@ -76,7 +108,7 @@ class LiftAssistTests(unittest.TestCase):
         self.ingest('lift-ok.json')
         good=event('journey',id='J-new',journey_id='J-new',passenger='P4',lift_id='L1',wheelchair_width=80,requested_at='2026-11-22T08:05:00Z',need_by='2026-11-22T08:30:00Z',route_minutes=10,staff_id='S4')
         bad=event('journey',id='J-bad',journey_id='J-bad',passenger='P5',lift_id='UNKNOWN',wheelchair_width=80,requested_at='2026-11-22T08:05:00Z',need_by='2026-11-22T08:30:00Z',route_minutes=10,staff_id='S5')
-        with self.assertRaisesRegex(ValueError,'unknown_route_lift'):self.import_events('batch.json',[good,bad])
+        with self.assertRaisesRegex(ValueError,'unknown_or_invalid_route_segment'):self.import_events('batch.json',[good,bad])
         self.assertEqual(report(self.db)['journey'],[])
     def test_parallel_fault_identity_freezes_lift(self):
         self.ingest('lift-ok.json');self.ingest('lift-bad.json')
