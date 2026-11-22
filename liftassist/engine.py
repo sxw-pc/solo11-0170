@@ -2,13 +2,16 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists
+from . import lifts,journeys,assists,display
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
-          'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record}
-GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','decision')
+          'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
+          'display_screen':display.screen,'ad_campaign':display.campaign,
+          'play_command':display.command,'screen_ack':display.ack,'camera_frame':display.frame}
+GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
+        'display':{'display_screen','ad_campaign','play_command','screen_ack','camera_frame'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','display_screen','ad_campaign','play_command','screen_ack','camera_frame','decision')
 
 def apply(db,event):
     kind=event.get('kind')

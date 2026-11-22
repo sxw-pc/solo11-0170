@@ -18,6 +18,11 @@ CREATE TABLE IF NOT EXISTS assistance(id TEXT PRIMARY KEY,journey_id TEXT NOT NU
 CREATE TABLE IF NOT EXISTS obligation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,kind TEXT NOT NULL,reason TEXT NOT NULL,resolved INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS compensation_contract(id TEXT NOT NULL,revision INTEGER NOT NULL,effective_from TEXT NOT NULL,rate_per_5min_cents INTEGER NOT NULL,max_cents INTEGER NOT NULL,sha TEXT NOT NULL,PRIMARY KEY(id,revision));
 CREATE TABLE IF NOT EXISTS compensation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,assist_id TEXT NOT NULL,contract_id TEXT,contract_revision INTEGER,delay_minutes INTEGER NOT NULL,amount_cents INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS display_screen(id TEXT PRIMARY KEY,station TEXT NOT NULL,zone TEXT NOT NULL,device_serial TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS ad_campaign(id TEXT PRIMARY KEY,advertiser TEXT NOT NULL,asset_hash TEXT NOT NULL,guaranteed_seconds INTEGER NOT NULL,valid_from TEXT NOT NULL,valid_to TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS play_command(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,campaign_id TEXT NOT NULL,starts TEXT NOT NULL,ends TEXT NOT NULL,priority INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS screen_ack(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,command_id TEXT NOT NULL,asset_hash TEXT NOT NULL,observed_at TEXT NOT NULL,state TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS camera_frame(id TEXT PRIMARY KEY,screen_id TEXT NOT NULL,image_hash TEXT NOT NULL,captured_at TEXT NOT NULL,visible_asset_hash TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS decision(id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,system TEXT NOT NULL,object_id TEXT NOT NULL,outcome TEXT NOT NULL,reason TEXT NOT NULL);
 """
 def connect(path):
