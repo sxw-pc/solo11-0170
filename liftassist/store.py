@@ -24,6 +24,18 @@ CREATE TABLE IF NOT EXISTS mobility_loan(id TEXT PRIMARY KEY,reservation_id TEXT
 CREATE TABLE IF NOT EXISTS mobility_tag(id TEXT PRIMARY KEY,asset_id TEXT NOT NULL,epc TEXT NOT NULL,installed_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS rfid_scan(id TEXT PRIMARY KEY,epc TEXT NOT NULL,reader TEXT NOT NULL,observed_at TEXT NOT NULL,rssi INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS custody_receipt(id TEXT PRIMARY KEY,asset_id TEXT NOT NULL,holder TEXT NOT NULL,location TEXT NOT NULL,observed_at TEXT NOT NULL,witness TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS asset_frame(asset_id TEXT PRIMARY KEY,frame_serial TEXT NOT NULL UNIQUE,enrolled_at TEXT NOT NULL,certificate TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS reader_position(reader TEXT PRIMARY KEY,location TEXT NOT NULL,station TEXT NOT NULL,registered_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS tag_certificate(id TEXT PRIMARY KEY,epc TEXT NOT NULL,asset_id TEXT NOT NULL,action TEXT NOT NULL,actor TEXT NOT NULL,effective_at TEXT NOT NULL,certificate TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS frame_witness(id TEXT PRIMARY KEY,asset_id TEXT NOT NULL,frame_serial TEXT NOT NULL,location TEXT NOT NULL,observed_at TEXT NOT NULL,observer TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS location_observation(id TEXT PRIMARY KEY,location TEXT NOT NULL,observed_at TEXT NOT NULL,weight_kg INTEGER NOT NULL,silhouette TEXT NOT NULL,observer TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS custody_hold(id TEXT PRIMARY KEY,asset_id TEXT NOT NULL,location TEXT NOT NULL,ordered_by TEXT NOT NULL,ordered_at TEXT NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS inventory_check(id TEXT PRIMARY KEY,hold_id TEXT NOT NULL,asset_id TEXT NOT NULL,location TEXT NOT NULL,frame_serial TEXT NOT NULL,checked_at TEXT NOT NULL,clerk TEXT NOT NULL,found INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS asset_transfer(id TEXT PRIMARY KEY,asset_id TEXT NOT NULL,from_station TEXT NOT NULL,to_station TEXT NOT NULL,carrier TEXT NOT NULL,authorized_by TEXT NOT NULL,authorized_at TEXT NOT NULL,due_by TEXT NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS transfer_receipt(id TEXT PRIMARY KEY,transfer_id TEXT NOT NULL,asset_id TEXT NOT NULL,frame_serial TEXT NOT NULL,location TEXT NOT NULL,received_at TEXT NOT NULL,receiver TEXT NOT NULL,seal_intact INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS carrier_claim(id TEXT PRIMARY KEY,transfer_id TEXT NOT NULL,claimed_at TEXT NOT NULL,claimant TEXT NOT NULL,state TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS asset_conflict(id INTEGER PRIMARY KEY,asset_id TEXT NOT NULL,kind TEXT NOT NULL,location TEXT NOT NULL,observed_at TEXT NOT NULL,detail TEXT NOT NULL,state TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS asset_custody(asset_id TEXT PRIMARY KEY,holder TEXT NOT NULL,location TEXT NOT NULL,physical_state TEXT NOT NULL,reason TEXT NOT NULL,tag_epc TEXT NOT NULL,tag_location TEXT NOT NULL,tag_state TEXT NOT NULL,updated_by TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS decision(id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,system TEXT NOT NULL,object_id TEXT NOT NULL,outcome TEXT NOT NULL,reason TEXT NOT NULL);
 """
 def connect(path):

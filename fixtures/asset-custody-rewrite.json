@@ -1,0 +1,1 @@
+{"events":[{"id":"RW1","kind":"mobility_asset","asset_id":"WC2","station":"B","width_cm":80,"recorded_at":"2026-11-22T09:20:00Z"},{"id":"RW2","kind":"tag_certificate","cert_id":"CERT-WRITE-2","epc":"EPC-1","asset_id":"WC2","action":"write","actor":"VENDOR-9","effective_at":"2026-11-22T09:30:00Z","certificate":"WRITE-CERT-88","recorded_at":"2026-11-22T09:30:00Z"}]}

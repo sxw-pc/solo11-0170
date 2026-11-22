@@ -1,5 +1,8 @@
 """Offline wheelchair asset, reservation and handover events."""
 from .store import one, log
+from .asset_custody import reconcile_asset
+
+CUSTODY_NOT_LENDABLE = ('pending_verification', 'sealed', 'in_transit', 'missing', 'conflict')
 
 
 def register(db, e):
@@ -23,6 +26,9 @@ def reserve(db, e):
         raise ValueError('mobility_asset_not_fit')
     if a['state'] != 'ready' or j['state'] not in ('committed', 'waitlist'):
         raise ValueError('mobility_reservation_unavailable')
+    custody = one(db, 'SELECT physical_state FROM asset_custody WHERE asset_id=?', (a['id'],))
+    if custody and custody['physical_state'] in CUSTODY_NOT_LENDABLE:
+        raise ValueError('mobility_asset_' + custody['physical_state'])
     if e['needed_at'] < j['requested_at'] or e['needed_at'] > j['need_by']:
         raise ValueError('mobility_reservation_outside_journey')
     db.execute("INSERT INTO mobility_reservation VALUES(?,?,?,?,'reserved')",
@@ -41,6 +47,7 @@ def loan(db, e):
     db.execute("UPDATE mobility_reservation SET state='loaned' WHERE id=?", (r['id'],))
     db.execute("UPDATE mobility_asset SET state='loaned',reason='handed_to_passenger' WHERE id=?", (r['asset_id'],))
     log(db, e['id'], 'mobility', r['asset_id'], 'loaned', 'handed_to_passenger')
+    reconcile_asset(db, r['asset_id'], e['id'])
     return 'loaned'
 
 
@@ -56,4 +63,5 @@ def return_asset(db, e):
     db.execute('UPDATE mobility_asset SET state=?,reason=? WHERE id=?',
                (state, 'return_inspected' if state == 'ready' else 'return_requires_inspection', r['asset_id']))
     log(db, e['id'], 'mobility', r['asset_id'], state, 'return_condition')
+    reconcile_asset(db, r['asset_id'], e['id'])
     return state

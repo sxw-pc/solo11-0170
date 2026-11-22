@@ -1,0 +1,1 @@
+{"events":[{"id":"PT1","kind":"transfer_authorize","transfer_id":"TR1","asset_id":"WC1","from_station":"A","to_station":"B","carrier":"CARRIER-1","authorized_by":"OWNER-1","authorized_at":"2026-11-22T09:10:00Z","due_by":"2026-11-22T12:00:00Z","recorded_at":"2026-11-22T09:10:00Z"}]}

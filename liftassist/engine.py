@@ -2,18 +2,25 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists,mobility,custody
+from . import lifts,journeys,assists,mobility,custody,asset_custody
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
           'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
           'mobility_asset':mobility.register,'mobility_reserve':mobility.reserve,
           'mobility_loan':mobility.loan,'mobility_return':mobility.return_asset,
-          'mobility_tag':custody.tag,'rfid_scan':custody.scan,'custody_receipt':custody.receipt}
+          'mobility_tag':custody.tag,'rfid_scan':custody.scan,'custody_receipt':custody.receipt,
+          'asset_frame':asset_custody.enroll_frame,'reader_register':asset_custody.register_reader,
+          'tag_certificate':asset_custody.tag_certificate,'frame_witness':asset_custody.frame_witness,
+          'location_observation':asset_custody.observe_location,'custody_hold':asset_custody.hold,
+          'inventory_check':asset_custody.inventory_check,'transfer_authorize':asset_custody.transfer_authorize,
+          'transfer_receive':asset_custody.transfer_receive,'carrier_claim':asset_custody.carrier_claim}
 GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
         'mobility':{'mobility_asset','mobility_reserve','mobility_loan','mobility_return'},
-        'custody':{'mobility_tag','rfid_scan','custody_receipt'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','mobility_asset','mobility_reservation','mobility_loan','mobility_tag','rfid_scan','custody_receipt','decision')
+        'custody':{'mobility_tag','rfid_scan','custody_receipt'},
+        'asset_custody':{'asset_frame','reader_register','tag_certificate','frame_witness','location_observation',
+                         'custody_hold','inventory_check','transfer_authorize','transfer_receive','carrier_claim'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','mobility_asset','mobility_reservation','mobility_loan','mobility_tag','rfid_scan','custody_receipt','asset_frame','reader_position','tag_certificate','frame_witness','location_observation','custody_hold','inventory_check','asset_transfer','transfer_receipt','carrier_claim','asset_conflict','asset_custody','decision')
 
 def apply(db,event):
     kind=event.get('kind')
