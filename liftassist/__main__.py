@@ -5,7 +5,7 @@ from .engine import import_file,report,audit
 
 def main():
     p=argparse.ArgumentParser();s=p.add_subparsers(dest='cmd',required=True)
-    for name in ('lift-import','journey-import','assist-import','mobility-import'):
+    for name in ('lift-import','journey-import','assist-import','mobility-import','custody-import'):
         a=s.add_parser(name);a.add_argument('--db',required=True);a.add_argument('--file',required=True)
     for name in ('report','audit'):
         a=s.add_parser(name);a.add_argument('--db',required=True)
@@ -20,6 +20,6 @@ def main():
         result['audit']=audit(x.db)
     elif x.cmd=='report':result=report(x.db)
     elif x.cmd=='audit':result=audit(x.db)
-    else:result=import_file(x.db,x.file,{'lift-import':'lift','journey-import':'journey','assist-import':'assist','mobility-import':'mobility'}[x.cmd])
+    else:result=import_file(x.db,x.file,{'lift-import':'lift','journey-import':'journey','assist-import':'assist','mobility-import':'mobility','custody-import':'custody'}[x.cmd])
     print(json.dumps(result,ensure_ascii=False,indent=2))
 if __name__=='__main__':main()
