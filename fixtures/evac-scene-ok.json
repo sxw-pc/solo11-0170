@@ -1,0 +1,10 @@
+{"events":[
+ {"id":"SE1","kind":"egress_edge","edge_id":"E1","station":"ST1","from_node":"P","to_node":"H","capacity_per_min":20,"travel_min":2,"accessible":true},
+ {"id":"SE2","kind":"egress_edge","edge_id":"E2","station":"ST1","from_node":"P","to_node":"W","capacity_per_min":10,"travel_min":2,"accessible":true},
+ {"id":"SE3","kind":"egress_edge","edge_id":"E3","station":"ST1","from_node":"W","to_node":"STREET","capacity_per_min":10,"travel_min":1,"accessible":true},
+ {"id":"SE4","kind":"egress_edge","edge_id":"ER","station":"ST1","from_node":"P","to_node":"R","capacity_per_min":40,"travel_min":1,"accessible":true},
+ {"id":"SZ1","kind":"evac_zone","zone_id":"Z1","station":"ST1","node":"P","occupants":80,"observed_at":"2026-06-01T08:00:00Z"},
+ {"id":"SS1","kind":"smoke_reading","reading_id":"SR1","station":"ST1","node":"H","opacity_pct":10,"sampled_at":"2026-06-01T08:01:00Z"},
+ {"id":"SD1","kind":"fire_door","door_id":"FD1","edge_id":"E1","state":"closed","observed_at":"2026-06-01T08:00:00Z"},
+ {"id":"SD2","kind":"fire_door","door_id":"FD2","edge_id":"E2","state":"closed","observed_at":"2026-06-01T08:00:00Z"}
+]}

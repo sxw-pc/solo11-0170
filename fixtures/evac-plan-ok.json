@@ -1,0 +1,7 @@
+{"events":[
+ {"id":"PR1","kind":"refuge_area","refuge_id":"RF1","station":"ST1","node":"R","protection_min":20},
+ {"id":"PP1","kind":"evac_plan","plan_id":"PL-SHELTER","station":"ST1","zone_id":"Z1","plan_type":"shelter",
+  "issued_at":"2026-06-01T08:01:00Z","horizon_min":12,"route_edges":["ER"],"refuge_node":"R","accessible_occupants":6},
+ {"id":"PP2","kind":"evac_plan","plan_id":"PL-STAIRS","station":"ST1","zone_id":"Z1","plan_type":"stairs",
+  "issued_at":"2026-06-01T08:01:00Z","horizon_min":12,"route_edges":["E2","E3"],"target_node":"STREET","accessible_occupants":6}
+]}
