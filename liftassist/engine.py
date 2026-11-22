@@ -2,13 +2,16 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists
+from . import lifts,journeys,assists,acoustics
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
-          'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record}
-GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','decision')
+          'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
+          'microphone':acoustics.microphone,'acoustic_trace':acoustics.trace,
+          'fan_run':acoustics.fan,'train_pass':acoustics.train}
+GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
+        'acoustics':{'microphone','acoustic_trace','fan_run','train_pass'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','microphone','acoustic_trace','fan_run','train_pass','decision')
 
 def apply(db,event):
     kind=event.get('kind')
