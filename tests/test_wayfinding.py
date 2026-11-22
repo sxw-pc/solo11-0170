@@ -9,7 +9,7 @@ class WayfindingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             db=Path(tmp)/'state.sqlite'
             result=import_file(db,FIX/'wayfinding-ok.json','wayfinding')
-            self.assertEqual(len(result['events']),3)
+            self.assertEqual(len(result['events']),4)
             self.assertEqual(report(db)['guide_sign'][0]['text'],'Platform')
             self.assertTrue(audit(db)['replay_ok'])
     def test_duplicate_file(self):

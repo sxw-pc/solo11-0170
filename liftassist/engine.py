@@ -2,15 +2,17 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists,wayfinding
+from . import lifts,journeys,assists,wayfinding,guide_visibility
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
           'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
-          'passage':wayfinding.passage,'guide_sign':wayfinding.sign,'obstacle':wayfinding.obstacle}
+          'passage':wayfinding.passage,'guide_sign':wayfinding.sign,'obstacle':wayfinding.obstacle,
+          'guide_scheme':guide_visibility.scheme,'wayfinding_aid':guide_visibility.aid,'guide_cert':guide_visibility.cert}
 GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
-        'wayfinding':{'passage','guide_sign','obstacle'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','passage','guide_sign','obstacle','decision')
+        'wayfinding':{'passage','guide_sign','obstacle'},
+        'guide':{'guide_scheme','wayfinding_aid','guide_cert'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','passage','guide_sign','obstacle','guide_scheme','wayfinding_aid','guide_cert','visibility_break','cert_sample','decision')
 
 def apply(db,event):
     kind=event.get('kind')

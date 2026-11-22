@@ -1,6 +1,11 @@
 """Separate facility, journey and assistance ledgers."""
+import json
 import sqlite3
 from pathlib import Path
+
+def jdumps(value):
+    """Canonical compact JSON so audit replays compare byte-identical projections."""
+    return json.dumps(value,sort_keys=True,ensure_ascii=False,separators=(',',':'))
 
 DDL="""
 PRAGMA foreign_keys=ON;
@@ -18,9 +23,14 @@ CREATE TABLE IF NOT EXISTS assistance(id TEXT PRIMARY KEY,journey_id TEXT NOT NU
 CREATE TABLE IF NOT EXISTS obligation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,kind TEXT NOT NULL,reason TEXT NOT NULL,resolved INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS compensation_contract(id TEXT NOT NULL,revision INTEGER NOT NULL,effective_from TEXT NOT NULL,rate_per_5min_cents INTEGER NOT NULL,max_cents INTEGER NOT NULL,sha TEXT NOT NULL,PRIMARY KEY(id,revision));
 CREATE TABLE IF NOT EXISTS compensation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,assist_id TEXT NOT NULL,contract_id TEXT,contract_revision INTEGER,delay_minutes INTEGER NOT NULL,amount_cents INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS passage(id TEXT PRIMARY KEY,station TEXT NOT NULL,centerline_json TEXT NOT NULL,width_cm INTEGER NOT NULL,survey_at TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS guide_sign(id TEXT PRIMARY KEY,passage_id TEXT NOT NULL,x_cm INTEGER NOT NULL,y_cm INTEGER NOT NULL,z_cm INTEGER NOT NULL,face_deg INTEGER NOT NULL,text TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS obstacle(id TEXT PRIMARY KEY,passage_id TEXT NOT NULL,polygon_json TEXT NOT NULL,height_cm INTEGER NOT NULL,valid_from TEXT NOT NULL,valid_to TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS passage(id TEXT PRIMARY KEY,station TEXT NOT NULL,centerline_json TEXT NOT NULL,width_cm INTEGER NOT NULL,survey_at TEXT NOT NULL,layer_offset_cm INTEGER);
+CREATE TABLE IF NOT EXISTS guide_sign(id TEXT PRIMARY KEY,passage_id TEXT NOT NULL,x_cm INTEGER NOT NULL,y_cm INTEGER NOT NULL,z_cm INTEGER,face_deg INTEGER NOT NULL,text TEXT NOT NULL,text_height_cm INTEGER);
+CREATE TABLE IF NOT EXISTS obstacle(id TEXT PRIMARY KEY,passage_id TEXT NOT NULL,polygon_json TEXT NOT NULL,height_cm INTEGER,valid_from TEXT NOT NULL,valid_to TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS guide_scheme(id TEXT PRIMARY KEY,passage_ids_json TEXT NOT NULL,kind TEXT NOT NULL,map_version TEXT NOT NULL,approved_at TEXT NOT NULL,signs_json TEXT NOT NULL,aids_json TEXT NOT NULL,event_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS wayfinding_aid(id TEXT PRIMARY KEY,passage_id TEXT NOT NULL,kind TEXT NOT NULL,polygon_json TEXT NOT NULL,valid_from TEXT NOT NULL,valid_to TEXT NOT NULL,verified INTEGER NOT NULL,event_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS guide_cert(id TEXT NOT NULL,revision INTEGER NOT NULL,passage_ids_json TEXT NOT NULL,scheme_id TEXT,kind TEXT NOT NULL,map_version TEXT NOT NULL,survey_at TEXT NOT NULL,eye_low_cm INTEGER NOT NULL,eye_high_cm INTEGER NOT NULL,eval_at TEXT NOT NULL,lit_window_json TEXT NOT NULL,visual_claimed INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,advice_json TEXT NOT NULL,event_id TEXT NOT NULL,PRIMARY KEY(id,revision));
+CREATE TABLE IF NOT EXISTS visibility_break(id INTEGER PRIMARY KEY,cert_id TEXT NOT NULL,revision INTEGER NOT NULL,passage_id TEXT NOT NULL,start_cm REAL NOT NULL,end_cm REAL NOT NULL,reason TEXT NOT NULL,blocked_by TEXT,covered_by_aid INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS cert_sample(id INTEGER PRIMARY KEY,cert_id TEXT NOT NULL,revision INTEGER NOT NULL,passage_id TEXT NOT NULL,station_cm REAL NOT NULL,lateral_cm REAL NOT NULL,eye_cm REAL NOT NULL,covered INTEGER NOT NULL,reason TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS decision(id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,system TEXT NOT NULL,object_id TEXT NOT NULL,outcome TEXT NOT NULL,reason TEXT NOT NULL);
 """
 def connect(path):

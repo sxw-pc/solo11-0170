@@ -1,0 +1,1 @@
+{"events":[{"id":"GC1","kind":"guide_cert","cert_id":"CERT-PA1","passage_ids":["PA1"],"scheme_id":"SCH-STATIC","map_version":"2026-01-01T08:00:00Z","eye_low_cm":110,"eye_high_cm":130,"eval_at":"2026-01-15T10:00:00Z","lit_windows":[{"from":"2026-01-01T00:00:00Z","to":"2026-12-31T23:59:59Z"}],"visual_claimed":true}]}
