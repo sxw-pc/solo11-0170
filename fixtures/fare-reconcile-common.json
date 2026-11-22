@@ -1,0 +1,13 @@
+{"events":[
+{"id":"FR-TA","kind":"fare_token","token_id":"TK-A","issuer":"CITY","token_hash":"hash-A","valid_from":"2026-06-01T00:00:00Z","valid_to":"2026-06-01T08:30:00Z"},
+{"id":"FR-TB","kind":"fare_token","token_id":"TK-B","issuer":"CITY","token_hash":"hash-B","valid_from":"2026-06-01T08:30:00Z","valid_to":"2026-06-02T00:00:00Z"},
+{"id":"FR-TC","kind":"fare_token","token_id":"TK-C","issuer":"CITY","token_hash":"hash-C","valid_from":"2026-06-01T00:00:00Z","valid_to":"2026-06-02T00:00:00Z"},
+{"id":"FR-GTA","kind":"gate_tap","tap_id":"GTA","token_id":"TK-A","station":"ST1","gate":"G1","direction":"in","observed_at":"2026-06-01T08:00:00Z"},
+{"id":"FR-GTB","kind":"gate_tap","tap_id":"GTB","token_id":"TK-B","station":"ST1","gate":"G1","direction":"out","observed_at":"2026-06-01T09:00:00Z"},
+{"id":"FR-GTC","kind":"gate_tap","tap_id":"GTC","token_id":"TK-C","station":"ST1","gate":"G2","direction":"in","observed_at":"2026-06-01T08:00:00Z"},
+{"id":"FR-FDA","kind":"fare_debit","debit_id":"FDA","token_id":"TK-A","cents":300,"charged_at":"2026-06-01T08:01:00Z","operator":"CITY"},
+{"id":"FR-FDB","kind":"fare_debit","debit_id":"FDB","token_id":"TK-B","cents":300,"charged_at":"2026-06-01T09:01:00Z","operator":"CITY"},
+{"id":"FR-FDC","kind":"fare_debit","debit_id":"FDC","token_id":"TK-C","cents":300,"charged_at":"2026-06-01T08:02:00Z","operator":"CITY"},
+{"id":"FR-PCAP","kind":"fare_product","product_id":"FP-CAP","product_type":"daily-cap","cap_cents":500,"valid_from":"2026-01-01T00:00:00Z","valid_to":"2026-12-31T00:00:00Z"},
+{"id":"FR-PRIDE","kind":"fare_product","product_id":"FP-RIDE","product_type":"per-ride","cap_cents":0,"valid_from":"2026-01-01T00:00:00Z","valid_to":"2026-12-31T00:00:00Z"}
+]}

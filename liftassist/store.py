@@ -19,9 +19,17 @@ CREATE TABLE IF NOT EXISTS obligation(id INTEGER PRIMARY KEY,journey_id TEXT NOT
 CREATE TABLE IF NOT EXISTS compensation_contract(id TEXT NOT NULL,revision INTEGER NOT NULL,effective_from TEXT NOT NULL,rate_per_5min_cents INTEGER NOT NULL,max_cents INTEGER NOT NULL,sha TEXT NOT NULL,PRIMARY KEY(id,revision));
 CREATE TABLE IF NOT EXISTS compensation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,assist_id TEXT NOT NULL,contract_id TEXT,contract_revision INTEGER,delay_minutes INTEGER NOT NULL,amount_cents INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS fare_token(id TEXT PRIMARY KEY,issuer TEXT NOT NULL,token_hash TEXT NOT NULL,valid_from TEXT NOT NULL,valid_to TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS gate_tap(id TEXT PRIMARY KEY,token_id TEXT NOT NULL,station TEXT NOT NULL,gate TEXT NOT NULL,direction TEXT NOT NULL,observed_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS gate_tap(id TEXT PRIMARY KEY,token_id TEXT NOT NULL,station TEXT NOT NULL,gate TEXT NOT NULL,direction TEXT NOT NULL,observed_at TEXT NOT NULL,offline INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS fare_product(id TEXT PRIMARY KEY,product_type TEXT NOT NULL,cap_cents INTEGER NOT NULL,valid_from TEXT NOT NULL,valid_to TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS fare_debit(id TEXT PRIMARY KEY,token_id TEXT NOT NULL,cents INTEGER NOT NULL,charged_at TEXT NOT NULL,operator TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS fare_enrollment(id TEXT PRIMARY KEY,token_id TEXT NOT NULL,product_id TEXT NOT NULL,effective_from TEXT NOT NULL,effective_to TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS tap_counter(token_id TEXT NOT NULL,counter INTEGER NOT NULL,observed_at TEXT NOT NULL,PRIMARY KEY(token_id,counter));
+CREATE TABLE IF NOT EXISTS rotation_witness(link_id TEXT PRIMARY KEY,issuer TEXT NOT NULL,blind_proof_hash TEXT NOT NULL,issued_at TEXT NOT NULL,revoked_at TEXT,state TEXT NOT NULL,reason TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS witness_member(link_id TEXT NOT NULL,token_id TEXT NOT NULL,UNIQUE(link_id,token_id));
+CREATE TABLE IF NOT EXISTS fare_refund(refund_id TEXT PRIMARY KEY,account_id TEXT NOT NULL,day TEXT NOT NULL,cents INTEGER NOT NULL,refunded_at TEXT NOT NULL,reason TEXT NOT NULL,link_id TEXT);
+CREATE TABLE IF NOT EXISTS fare_account(account_id TEXT NOT NULL,day TEXT NOT NULL,scope TEXT NOT NULL,cap_cents INTEGER,gross_cents INTEGER NOT NULL,receivable_cents INTEGER NOT NULL,refunded_cents INTEGER NOT NULL,refundable_cents INTEGER NOT NULL,bound_lower INTEGER NOT NULL,bound_upper INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,PRIMARY KEY(account_id,day));
+CREATE TABLE IF NOT EXISTS candidate_journey(journey_key TEXT PRIMARY KEY,account_id TEXT NOT NULL,day TEXT NOT NULL,in_tap TEXT,out_tap TEXT,in_station TEXT,out_station TEXT,state TEXT NOT NULL,reason TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS reconcile_todo(id INTEGER PRIMARY KEY,account_id TEXT NOT NULL,day TEXT,kind TEXT NOT NULL,cents INTEGER NOT NULL,reason TEXT NOT NULL,ref_id TEXT);
 CREATE TABLE IF NOT EXISTS decision(id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,system TEXT NOT NULL,object_id TEXT NOT NULL,outcome TEXT NOT NULL,reason TEXT NOT NULL);
 """
 def connect(path):

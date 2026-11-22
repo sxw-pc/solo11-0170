@@ -1,0 +1,5 @@
+{"events":[
+{"id":"FB-ENA","kind":"fare_enrollment","enrollment_id":"ENA","token_id":"TK-A","product_id":"FP-RIDE","effective_from":"2026-06-01T00:00:00Z","effective_to":"2026-06-02T00:00:00Z"},
+{"id":"FB-ENB","kind":"fare_enrollment","enrollment_id":"ENB","token_id":"TK-B","product_id":"FP-RIDE","effective_from":"2026-06-01T00:00:00Z","effective_to":"2026-06-02T00:00:00Z"},
+{"id":"FB-ENC","kind":"fare_enrollment","enrollment_id":"ENC","token_id":"TK-C","product_id":"FP-RIDE","effective_from":"2026-06-01T00:00:00Z","effective_to":"2026-06-02T00:00:00Z"}
+]}

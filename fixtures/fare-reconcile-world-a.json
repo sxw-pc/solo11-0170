@@ -1,0 +1,6 @@
+{"events":[
+{"id":"FA-ENA","kind":"fare_enrollment","enrollment_id":"ENA","token_id":"TK-A","product_id":"FP-CAP","effective_from":"2026-06-01T00:00:00Z","effective_to":"2026-06-02T00:00:00Z"},
+{"id":"FA-ENB","kind":"fare_enrollment","enrollment_id":"ENB","token_id":"TK-B","product_id":"FP-CAP","effective_from":"2026-06-01T00:00:00Z","effective_to":"2026-06-02T00:00:00Z"},
+{"id":"FA-ENC","kind":"fare_enrollment","enrollment_id":"ENC","token_id":"TK-C","product_id":"FP-CAP","effective_from":"2026-06-01T00:00:00Z","effective_to":"2026-06-02T00:00:00Z"},
+{"id":"FA-LINK","kind":"rotation_witness","link_id":"LK1","issuer":"CITY","blind_proof_hash":"blind-proof-LK1","issued_at":"2026-06-01T09:05:00Z","tokens":["TK-A","TK-B"]}
+]}

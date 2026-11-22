@@ -2,15 +2,20 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists,fares
+from . import lifts,journeys,assists,fares,fare_reconcile
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
           'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
-          'fare_token':fares.token,'gate_tap':fares.tap,'fare_product':fares.product,'fare_debit':fares.debit}
+          'fare_token':fares.token,'gate_tap':fares.tap,'fare_product':fares.product,'fare_debit':fares.debit,
+          'fare_enrollment':fare_reconcile.enrollment,'tap_counter':fare_reconcile.counter,
+          'rotation_witness':fare_reconcile.witness,'witness_revoke':fare_reconcile.revoke_witness,'fare_refund':fare_reconcile.refund}
 GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
-        'fare':{'fare_token','gate_tap','fare_product','fare_debit'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','fare_token','gate_tap','fare_product','fare_debit','decision')
+        'fare':{'fare_token','gate_tap','fare_product','fare_debit','fare_enrollment','tap_counter',
+                'rotation_witness','witness_revoke','fare_refund'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation',
+             'fare_token','gate_tap','fare_product','fare_debit','fare_enrollment','tap_counter','rotation_witness','witness_member','fare_refund',
+             'fare_account','candidate_journey','reconcile_todo','decision')
 
 def apply(db,event):
     kind=event.get('kind')
