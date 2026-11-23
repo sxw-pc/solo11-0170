@@ -2,7 +2,7 @@ import json
 from .store import one,log
 
 def microphone(db,e):
-    db.execute('INSERT INTO microphone VALUES(?,?,?,?,?)',(e['microphone_id'],e['station'],e['x_m'],e['y_m'],e['calibration_id']))
+    db.execute('INSERT INTO microphone VALUES(?,?,?,?,?,?)',(e['microphone_id'],e['station'],e['x_m'],e['y_m'],e['calibration_id'],e.get('saturation_db')))
     log(db,e['id'],'acoustics',e['microphone_id'],'captured','microphone')
     return 'captured'
 def trace(db,e):

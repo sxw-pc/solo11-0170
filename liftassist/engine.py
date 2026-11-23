@@ -2,16 +2,20 @@
 import hashlib,json,sqlite3
 from contextlib import closing
 from pathlib import Path
-from . import lifts,journeys,assists,acoustics
+from . import lifts,journeys,assists,acoustics,noise_attribution
 from .store import connect,one,many
 
 DISPATCH={'lift':lifts.register,'fault':lifts.fault,'repair':lifts.repair,'retest':lifts.retest,'journey':journeys.request,
           'staff':assists.qualify,'shift':assists.schedule,'staff_revoke':assists.revoke,'terms':assists.terms,'assist':assists.record,
           'microphone':acoustics.microphone,'acoustic_trace':acoustics.trace,
-          'fan_run':acoustics.fan,'train_pass':acoustics.train}
+          'fan_run':acoustics.fan,'train_pass':acoustics.train,
+          'station_acoustics':noise_attribution.station_acoustics,'noise_complaint':noise_attribution.complaint,
+          'interim_measure':noise_attribution.interim_measure,'measure_update':noise_attribution.measure_update,
+          'control_experiment':noise_attribution.control_experiment}
 GROUPS={'lift':{'lift','fault','repair','retest'},'journey':{'journey'},'assist':{'staff','shift','staff_revoke','terms','assist'},
-        'acoustics':{'microphone','acoustic_trace','fan_run','train_pass'}}
-PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','microphone','acoustic_trace','fan_run','train_pass','decision')
+        'acoustics':{'microphone','acoustic_trace','fan_run','train_pass'},
+        'noise':{'microphone','acoustic_trace','fan_run','train_pass','station_acoustics','noise_complaint','interim_measure','measure_update','control_experiment'}}
+PROJECTIONS=('lift','fault','retest','journey','route_segment','route','staff_qualification','staff_shift','assistance','obligation','compensation_contract','compensation','microphone','acoustic_trace','fan_run','train_pass','station_acoustics','noise_complaint','interim_measure','control_experiment','decision')
 
 def apply(db,event):
     kind=event.get('kind')

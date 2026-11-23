@@ -18,10 +18,14 @@ CREATE TABLE IF NOT EXISTS assistance(id TEXT PRIMARY KEY,journey_id TEXT NOT NU
 CREATE TABLE IF NOT EXISTS obligation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,kind TEXT NOT NULL,reason TEXT NOT NULL,resolved INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS compensation_contract(id TEXT NOT NULL,revision INTEGER NOT NULL,effective_from TEXT NOT NULL,rate_per_5min_cents INTEGER NOT NULL,max_cents INTEGER NOT NULL,sha TEXT NOT NULL,PRIMARY KEY(id,revision));
 CREATE TABLE IF NOT EXISTS compensation(id INTEGER PRIMARY KEY,journey_id TEXT NOT NULL,assist_id TEXT NOT NULL,contract_id TEXT,contract_revision INTEGER,delay_minutes INTEGER NOT NULL,amount_cents INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS microphone(id TEXT PRIMARY KEY,station TEXT NOT NULL,x_m INTEGER NOT NULL,y_m INTEGER NOT NULL,calibration_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS microphone(id TEXT PRIMARY KEY,station TEXT NOT NULL,x_m INTEGER NOT NULL,y_m INTEGER NOT NULL,calibration_id TEXT NOT NULL,saturation_db REAL);
 CREATE TABLE IF NOT EXISTS acoustic_trace(id TEXT PRIMARY KEY,microphone_id TEXT NOT NULL,started_at TEXT NOT NULL,sample_rate_hz INTEGER NOT NULL,bands_json TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS fan_run(id TEXT PRIMARY KEY,station TEXT NOT NULL,fan_id TEXT NOT NULL,started_at TEXT NOT NULL,stopped_at TEXT NOT NULL,speed_pct INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS train_pass(id TEXT PRIMARY KEY,station TEXT NOT NULL,train_id TEXT NOT NULL,passed_at TEXT NOT NULL,speed_kph INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS station_acoustics(station TEXT PRIMARY KEY,reverb_time_s REAL NOT NULL,fan_x_m REAL NOT NULL,fan_y_m REAL NOT NULL,track_x_m REAL NOT NULL,track_y_m REAL NOT NULL,min_airflow_pct INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS noise_complaint(id TEXT PRIMARY KEY,station TEXT NOT NULL,microphone_id TEXT NOT NULL,trace_id TEXT NOT NULL,band_hz INTEGER NOT NULL,started_at TEXT NOT NULL,ended_at TEXT NOT NULL,level_db REAL NOT NULL,saturated INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS interim_measure(id TEXT PRIMARY KEY,station TEXT NOT NULL,party TEXT NOT NULL,measure TEXT NOT NULL,issued_at TEXT NOT NULL,expires_at TEXT NOT NULL,status TEXT NOT NULL,basis TEXT NOT NULL,executed_at TEXT,cancelled_at TEXT);
+CREATE TABLE IF NOT EXISTS control_experiment(id TEXT PRIMARY KEY,station TEXT NOT NULL,design TEXT NOT NULL,started_at TEXT NOT NULL,ended_at TEXT NOT NULL,fan_speed_pct INTEGER,microphone_id TEXT,trace_id TEXT,band_hz INTEGER,status TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS decision(id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,system TEXT NOT NULL,object_id TEXT NOT NULL,outcome TEXT NOT NULL,reason TEXT NOT NULL);
 """
 def connect(path):

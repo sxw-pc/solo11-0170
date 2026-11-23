@@ -1,14 +1,18 @@
 """Local CLI for three independently importable evidence ledgers."""
 import argparse,json
+from contextlib import closing
 from pathlib import Path
 from .engine import import_file,report,audit
+from .noise_attribution import dossier
+from .store import connect
 
 def main():
     p=argparse.ArgumentParser();s=p.add_subparsers(dest='cmd',required=True)
-    for name in ('lift-import','journey-import','assist-import','acoustics-import'):
+    for name in ('lift-import','journey-import','assist-import','acoustics-import','noise-import'):
         a=s.add_parser(name);a.add_argument('--db',required=True);a.add_argument('--file',required=True)
     for name in ('report','audit'):
         a=s.add_parser(name);a.add_argument('--db',required=True)
+    d=s.add_parser('noise-dossier');d.add_argument('--db',required=True);d.add_argument('--station',required=True);d.add_argument('--band',type=int,default=125)
     d=s.add_parser('demo');d.add_argument('--db',required=True)
     x=p.parse_args()
     if x.cmd=='demo':
@@ -18,8 +22,10 @@ def main():
         file=Path(__file__).resolve().parent.parent/'fixtures'/'demo.json'
         result=import_file(x.db,file)
         result['audit']=audit(x.db)
+    elif x.cmd=='noise-dossier':
+        with closing(connect(x.db)) as db:result=dossier(db,x.station,x.band)
     elif x.cmd=='report':result=report(x.db)
     elif x.cmd=='audit':result=audit(x.db)
-    else:result=import_file(x.db,x.file,{'lift-import':'lift','journey-import':'journey','assist-import':'assist','acoustics-import':'acoustics'}[x.cmd])
+    else:result=import_file(x.db,x.file,{'lift-import':'lift','journey-import':'journey','assist-import':'assist','acoustics-import':'acoustics','noise-import':'noise'}[x.cmd])
     print(json.dumps(result,ensure_ascii=False,indent=2))
 if __name__=='__main__':main()
